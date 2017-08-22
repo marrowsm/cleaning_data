@@ -5,9 +5,21 @@ library("dplyr")
 library("reshape")
 library("reshape2")
 
+filename <- "getdata_dataset.zip"
+  
+## Download and unzip the dataset:
+if (!file.exists(filename)){
+    fileURL <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip "
+    download.file(fileURL, filename, mode = "wb")
+}  
+if (!file.exists("UCI HAR Dataset")) { 
+unzip(filename) 
+}
+
+setwd("./UCI HAR Dataset")
 # - Define File Paths
-fp_activity_labels <- "./activity_labels.txt"
-fp_features <- "./features.txt"
+fp_activity_labels <- "activity_labels.txt"
+fp_features <- "features.txt"
 fp_train_x <- "./train/X_train.txt"
 fp_train_label <- "./train/Y_train.txt"
 fp_train_subject <- "./train/subject_train.txt"
@@ -53,6 +65,9 @@ mean_cols <- grep("mean", names(data_set) )
 std_cols  <-grep("std", names(data_set) )
 desc_cols <- which(names(data_set) %in% c("label","subject","activity_desc") ) 
 reduced_data_set <- data_set[,c(desc_cols,mean_cols,std_cols)] 
+names(reduced_data_set) <- gsub('-mean', 'Mean',names(reduced_data_set))
+names(reduced_data_set) <- gsub('-std', 'Std',names(reduced_data_set))
+names(reduced_data_set) <- gsub('[-()]', '',names(reduced_data_set))
 
 write.table(reduced_data_set,"./tidy_data.txt",row.name=FALSE)
 
